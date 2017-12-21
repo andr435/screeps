@@ -10,16 +10,19 @@ var utilits = {
     },
 
     respawn: function(settings) {
-        var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-        console.log('Harvesters: ' + harvesters.length);
+        for (var key in settings.creep) {
+            var creeps = _.filter(Game.creeps, (creep) = > creep.memory.role == settings.creep[key].role);
+            console.log(settings.creep[key].role + ' ' + creeps.length);
 
-        if(harvesters.length < 2) {
-            var newName = 'Harvester' + Game.time;
-            console.log('Spawning new harvester: ' + newName);
-            Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE], newName,
-                {memory: {role: 'harvester'}});
+
+            if (creeps.length < settings.creep[key].amount_on_map) {
+                var newName = this.capitalize(settings.creep[key].role) + Game.time;
+                var newBody = this.body(settings.creep[key]);
+                console.log('Spawning new ' + settings.creep[key].role + ': ' + newName);
+                Game.spawns['Spawn1'].spawnCreep(newBody, newName,
+                    {memory: {role: settings.creep[key].role}});
+            }
         }
-
         if(Game.spawns['Spawn1'].spawning) {
             var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
             Game.spawns['Spawn1'].room.visual.text(
@@ -28,16 +31,23 @@ var utilits = {
                 Game.spawns['Spawn1'].pos.y,
                 {align: 'left', opacity: 0.8});
         }
+    },
 
-        for(var name in Game.creeps) {
-            var creep = Game.creeps[name];
-            if(creep.memory.role == 'harvester') {
-                roleHarvester.run(creep);
-            }
-            if(creep.memory.role == 'upgrader') {
-                roleUpgrader.run(creep);
-            }
-        }
+    capitalize: function(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+    
+    body: function (set) {
+        var energy = Room.energyAvailable;
+        var body = [];
+        if (energy >= set.body.type_by_energy.expert)
+            body = set.body.expert;
+        else if (energy >= set.body.type_by_energy.advanced)
+            body = set.body.advanced;
+        else
+            body = set.body.simple;
+
+        return body
     }
 };
 
