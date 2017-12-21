@@ -10,12 +10,13 @@ var utilits = {
     },
 
     respawn: function(settings) {
-        for (var key in settings.creep) {
-            var creeps = _.filter(Game.creeps, (creep) = > creep.memory.role == settings.creep[key].role);
-            console.log(settings.creep[key].role + ' ' + creeps.length);
+        for (var key in settings['creep']) {
+            //var crps = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
+            var crps = _.filter(Game.creeps, (creep) => creep.memory.role == settings.creep[key].role);
+            console.log(settings.creep[key].role + ' ' + crps.length);
 
 
-            if (creeps.length < settings.creep[key].amount_on_map) {
+            if (crps.length < settings.creep[key].amount_on_map) {
                 var newName = this.capitalize(settings.creep[key].role) + Game.time;
                 var newBody = this.body(settings.creep[key]);
                 console.log('Spawning new ' + settings.creep[key].role + ': ' + newName);
@@ -40,9 +41,9 @@ var utilits = {
     body: function (set) {
         var energy = Room.energyAvailable;
         var body = [];
-        if (energy >= set.body.type_by_energy.expert)
+        if (energy >= set.type_by_energy.expert)
             body = set.body.expert;
-        else if (energy >= set.body.type_by_energy.advanced)
+        else if (energy >= set.type_by_energy.advanced)
             body = set.body.advanced;
         else
             body = set.body.simple;
