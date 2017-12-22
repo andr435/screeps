@@ -10,20 +10,6 @@ var utilits = {
     },
 
     respawn: function(settings) {
-        for (var key in settings['creep']) {
-            //var crps = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-            var crps = _.filter(Game.creeps, (creep) => creep.memory.role == settings.creep[key].role);
-            console.log(settings.creep[key].role + ' ' + crps.length);
-
-
-            if (crps.length < settings.creep[key].amount_on_map) {
-                var newName = this.capitalize(settings.creep[key].role) + Game.time;
-                var newBody = this.body(settings.creep[key]);
-                console.log('Spawning new ' + settings.creep[key].role + ': ' + newName);
-                Game.spawns['Spawn1'].spawnCreep(newBody, newName,
-                    {memory: {role: settings.creep[key].role}});
-            }
-        }
         if(Game.spawns['Spawn1'].spawning) {
             var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
             Game.spawns['Spawn1'].room.visual.text(
@@ -31,6 +17,24 @@ var utilits = {
                 Game.spawns['Spawn1'].pos.x + 1,
                 Game.spawns['Spawn1'].pos.y,
                 {align: 'left', opacity: 0.8});
+        } else {
+            for (var key in settings['creep']) {
+                //var crps = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
+                var crps = _.filter(Game.creeps, (creep) => creep.memory.role == settings.creep[key].role);
+                console.log('total of creeps with role ' + settings.creep[key].role + ': ' + crps.length);
+    
+    
+                if (crps.length < settings.creep[key].amount_on_map) {
+                    var newName = this.capitalize(settings.creep[key].role) + Game.time;
+                    var newBody = this.body(settings.creep[key]);
+                    
+                    if(Game.spawns['Spawn1'].spawnCreep(newBody, newName,
+                        {memory: {role: settings.creep[key].role}}) === 0){
+                            console.log('Spawning new ' + settings.creep[key].role + ': ' + newName);
+                        }
+                    break;
+                }
+            }
         }
     },
 
